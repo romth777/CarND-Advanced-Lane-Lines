@@ -156,6 +156,7 @@ class Pipeline:
         self.left_line.reset()
         self.right_line.reset()
         self.isfound = False
+        self.img_deque.clear()
 
     # Main pipeline process of this project
     def pipeline(self, img):
@@ -251,20 +252,20 @@ class Pipeline:
 def main():
     pl = Pipeline()
 
-    do_images = False
-    do_videos = True
+    do_images = True
+    do_videos = False
 
     if do_images:
         images = glob.glob('test_images/*.jpg')
 
         for fname in images:
-            image = cv2.imread(fname)
+            image = mpimg.imread(fname)
             output = pl.pipeline(image)
-            plt.imshow(pl.pipeline(output))
+            mpimg.imsave(os.path.join('output_images', 'output_' + os.path.basename(fname)), output)
+            plt.imshow(output)
             pl.reset()
 
     if do_videos:
-        # video_files = ['project_video.mp4', 'challenge_video.mp4', 'harder_challenge_video.mp4']
         video_files = ['project_video.mp4']
         for video_file in video_files:
             pl.run_pipeline(video_file)
