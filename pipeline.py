@@ -204,10 +204,14 @@ class Pipeline:
         # Draw the lane onto the warped blank image
         cv2.fillPoly(color_warp, np.int_([pts]), (0, 255, 0))
 
+        warp = self.ipu.warp(undistorted)
+        warped_result = cv2.addWeighted(warp, 1, color_warp, 0.3, 0)
+
         # Warp the blank back to original image space using inverse perspective matrix (Minv)
         newwarp = cv2.warpPerspective(color_warp, self.ipu.Minv, self.ipu.img_size)
         # Combine the result with the original image
         result = cv2.addWeighted(undistorted, 1, newwarp, 0.3, 0)
+        self.arrange_images(result, warped_result, "undistorted image with highlighted lane", "undistorted warped image with hilighted lane")
 
         # draw radius + distance from center on image
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -225,9 +229,9 @@ class Pipeline:
         f, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 9))
         f.tight_layout()
         ax1.imshow(img1)
-        ax1.set_title(title1, fontsize=50)
+        ax1.set_title(title1, fontsize=25)
         ax2.imshow(img2)
-        ax2.set_title(title2, fontsize=50)
+        ax2.set_title(title2, fontsize=25)
         plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
 
     # run the main pipeline for video
@@ -256,7 +260,7 @@ def main():
     do_videos = False
 
     if do_images:
-        images = glob.glob('test_images/*.jpg')
+        images = glob.glob('test_images/test1.jpg')
 
         for fname in images:
             image = mpimg.imread(fname)
